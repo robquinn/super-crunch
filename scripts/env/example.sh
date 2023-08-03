@@ -1,7 +1,51 @@
-#!/usr/bin/env sh
+#! /bin/bash
+
 # Script to generate .env.example
 
+# Env Vars NOT to remove values from
+keepEnvVars=(
+  "BIGQUERY_TRANSACTIONS_DATASET_ID"
+  "BIGQUERY_CLOSED_TABLE_ID"
+  "BIGQUERY_PENDING_TABLE_ID"
+  "BIGQUERY_OFFICE_TABLE_ID"
+  "BIGQUERY_FORECAST_TABLE_ID"
+  "CLOUD_FUNCTIONS_FN_NAME_CLOSED"
+  "CLOUD_FUNCTIONS_FN_NAME_PENDING"
+  "CLOUD_FUNCTIONS_FN_NAME_OFFICE"
+  "CLOUD_FUNCTIONS_FN_NAME_FORECAST"
+  "CLOUD_FUNCTIONS_ENTRY_POINT_CLOSED"
+  "CLOUD_FUNCTIONS_ENTRY_POINT_PENDING"
+  "CLOUD_FUNCTIONS_ENTRY_POINT_OFFICE"
+  "CLOUD_FUNCTIONS_ENTRY_POINT_FORECAST"
+  "CLOUD_FUNCTIONS_RUNTIME"
+  "CLOUD_FUNCTIONS_REGION"
+  "CLOUD_FUNCTIONS_SOURCE"
+  "CLOUD_FUNCTIONS_MEMORY"
+  "FUNCTIONS_FRAMEWORK_TARGET"
+  "FUNCTIONS_FRAMEWORK_SIGNATURE_TYPE"
+  "FUNCTIONS_FRAMEWORK_PORT"
+  "PUBSUB_TOPIC_NAME"
+  "PUBSUB_EMULATOR_PROJECT_ID"
+  "PUBSUB_EMULATOR_TOPIC_ID"
+  "PUBSUB_EMULATOR_SUBSCRIPTION_ID"
+  "SCHEDULER_JOB_NAME"
+  "SCHEDULER_LOCATION"
+  "SCHEDULER_SCHEDULE"
+  "SCHEDULER_MESSAGE_BODY"
+  "SCHEDULER_TIME_ZONE"
+)
+
+envVarsStr=""
+
+for i in "${!keepEnvVars[@]}"; do
+  if [ $i -eq 0 ]; then
+    envVarsStr="${keepEnvVars[$i]}"
+  else
+    envVarsStr="${keepEnvVars[$i]}|${envVarsStr}"
+  fi
+done
+
+regex="/($envVarsStr)=.*/!s/(.*\=)(.*)/\1/g"
+
 # Remove the values from env vars in .env
-sed -r 's/(.*\=)("?)(.*)(\"?)/\1/g' .env >.env.example
-# git add .env.example
-git update-index --add .env.example
+sed -r "$regex" .env >.env.example

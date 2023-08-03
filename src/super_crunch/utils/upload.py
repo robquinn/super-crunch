@@ -1,19 +1,37 @@
 import os
-from typing import Literal
 
 from google.cloud import bigquery
 from google.cloud.bigquery.table import TableReference
 
 from .. import logger
+from ..constants import TRANSACTION_TYPES
+from .columns import Columns
 from .endpoint import get_endpoint
+from .fields import Fields
 from .transactions import Transactions
 
 
 def upload_transactions(
-    endpoint: str, table_ref: TableReference, type: Literal["closed", "pending"]
+    endpoint: str,
+    table_ref: TableReference,
+    type: TRANSACTION_TYPES,
 ) -> None:
     api_response = get_endpoint(endpoint=endpoint)
-    transactions = Transactions(api_response=api_response, type=type)
+
+    cols = Columns(type=type)
+
+    fields = Fields(
+        {
+            "numeric": cols.numeric(),
+            "date": cols.date(),
+            "json": cols.json(),
+            "string": cols.string(),
+            "boolean": cols.boolean(),
+            "office": cols.office(),
+        }
+    )
+
+    transactions = Transactions(api_response=api_response, fields=fields, type=type)
     transactions.change_column_names()
     transactions.cast_columns()
     transactions.transform_columns()
@@ -36,8 +54,6 @@ def upload_transactions(
     )
     job.result()  # Waits for table load to complete.
     logger.info(
-        "Loaded {} rows into {}:{}.".format(
-            job.output_rows, table_ref.dataset_id, table_ref.table_id
-        )
+        f"{job.output_rows} Records Uploaded Into "
+        + f"{table_ref.dataset_id}:{table_ref.table_id}."
     )
-    logger.info(f"{len(transactions)} Records uploaded in {table_ref.table_id}.")
