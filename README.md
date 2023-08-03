@@ -152,7 +152,7 @@ make test_upload
 
 ## Integration Testing
 
-To run the integration test on a function, you first need to select which function you want to test by setting the `FUNCTIONS_FRAMEWORK_TARGET` env var (make sure the `.env` file is filled out for the most part as well too).
+To run the integration test on a function, you first need to select which function you want to test by setting the `FUNCTIONS_FRAMEWORK_TARGET` env var to the function you want to test.
 
 Next, you will need 3 separate shells.
 
