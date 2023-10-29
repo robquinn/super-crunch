@@ -57,8 +57,12 @@ class Transactions:
         def date_fields() -> None:
             columns = self.fields["date"]
 
+            # self.df[columns] = self.df[columns].apply(
+            #     lambda x: pd.Series(x, dtype="string")
+            # )
+            self.df[columns] = self.df[columns].replace("-", None, regex=False)
             self.df[columns] = self.df[columns].apply(
-                lambda x: pd.Series(x, dtype="string")
+                lambda x: pd.to_datetime(x).dt.date
             )
             self.df[columns] = self.df[columns].replace(np.nan, None, regex=True)
 

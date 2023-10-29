@@ -52,11 +52,12 @@ class Columns:
     def date(self) -> List[str] | None:
         if self.type == CLOSED:
             return [
+                "closed_date",
                 "contract_date",
                 "date_created",
             ]
         elif self.type == PENDING:
-            return ["contract_date", "date_created"]
+            return ["estimated_close_date", "contract_date", "date_created"]
         elif self.type == OFFICE:
             return ["close_date"]
         elif self.type == FORECAST:

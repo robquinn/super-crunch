@@ -8,7 +8,7 @@ from .. import logger
 def get_endpoint(endpoint: str) -> StringIO:
     logger.info(f"Trying API Endpoint: {endpoint}")
     try:
-        response = requests.get(endpoint, timeout=None, verify=False)
+        response = requests.get(endpoint, timeout=None)
         logger.info("Successful Retrieval at API Endpoint")
         response_text = StringIO(response.text)
         return response_text
